@@ -4,7 +4,8 @@ import glob
 from pathlib import Path
 
 def read_h5_file(file_path, rows=5):
-    """读取H5文件并显示指定行数的数据
+    """
+    读取H5文件并显示指定行数的数据
     
     参数:
         file_path: H5文件的路径

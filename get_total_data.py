@@ -14,7 +14,7 @@ import pandas as pd
 import numpy as np
 import os
 
-def merge_factor_return_data(factors_file, returns_file, output_file):
+def merge_factor_return_data(factors_file, returns_file, output_file, drop_missing=True):
     """
     合并因子数据和收益数据，将下一期收益作为标签
 
@@ -22,6 +22,7 @@ def merge_factor_return_data(factors_file, returns_file, output_file):
     factors_file (str): 因子数据文件路径
     returns_file (str): 收益率数据文件路径
     output_file (str): 输出数据文件路径
+    drop_missing (bool): 是否删除包含缺失值的行，默认为True
 
     返回:
     pd.DataFrame: 合并后的数据
@@ -111,6 +112,13 @@ def merge_factor_return_data(factors_file, returns_file, output_file):
     print(f"\n数据中共有 {missing_values_count} 个缺失值")
     print(f"包含缺失值的行数: {rows_with_missing}")
 
+    # 根据参数决定是否删除缺失值行
+    if drop_missing and rows_with_missing > 0:
+        # 丢弃包含缺失值的行
+        original_shape = total_data.shape
+        total_data = total_data.dropna()
+        print(f"已丢弃缺失值行，数据形状从 {original_shape} 变为 {total_data.shape}")
+
     # 保存到新的h5文件
     print(f"\n正在保存到{output_file}...")
     total_data.to_hdf(output_file, key='data', mode='w')
@@ -129,5 +137,15 @@ if __name__ == "__main__":
     returns_file = 'returns.h5'
     output_file = 'new_total_data.h5'
     
+    # 是否删除缺失值，默认为True
+    drop_missing = True
+    
     # 运行数据合并
-    result_data = merge_factor_return_data(factors_file, returns_file, output_file)
+    result_data = merge_factor_return_data(
+        factors_file=factors_file,
+        returns_file=returns_file,
+        output_file=output_file,
+        drop_missing=drop_missing
+    )
+    
+    print("处理完成!")
